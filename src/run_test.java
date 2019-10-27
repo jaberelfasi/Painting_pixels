@@ -21,8 +21,9 @@ public class run_test {
 		gd.fillSingleGridLocation("Blue", 9, 5);
 		
 		//print all grid locations
-		System.out.println("locations filled for sinle fills:");
-		gd.printAllLocations();
+		System.out.println("locations filled for single fills:");
+		gd.printAllLocationsWithCertainColor("Yellow");
+		gd.printAllLocationsWithCertainColor("Blue");
 		
 		//fill a single row with provided boundaries(y, firstInColumn, lastInColumn, colour)
 		gd.fillRowWithBoundaries(3, 2, 7, "Blue");
@@ -30,14 +31,14 @@ public class run_test {
 		
 		//print all grid locations
 		System.out.println("locations filled for row with boundaries:");
-		gd.printAllLocations();
+		gd.printAllLocationsWithCertainColor("Blue");
 		
 		//fill a single column with provided boundaries(x, firstInRow, lastInRow colour)
 		gd.fillColumnWithBoundaries(3, 2, 6, "Green");
 		
 		//print all grid locations
 		System.out.println("locations filled for column with boundaries:");
-		gd.printAllLocations();
+		gd.printAllLocationsWithCertainColor("Green");
 		
 		//flood a pixel: with red
 		floodPixelWithColor(6,3,"Red",gd);
