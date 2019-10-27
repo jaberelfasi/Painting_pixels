@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,15 +43,19 @@ public class run_test {
 		
 		//flood a pixel: with red
 		floodPixelWithColor(6,3,"Red",gd);
+		printAllGridLocationsWithColor("Red", gd);
 		
 		//flood a pixel: with Orange
-		floodPixelWithColor(3,3,"Orange",gd);
+		floodPixelWithColor(3,6,"Orange",gd);
+		printAllGridLocationsWithColor("Orange", gd);
 		
 		//flood a pixel: with Purple
 		floodPixelWithColor(5,4,"Purple",gd);
+		printAllGridLocationsWithColor("Purple", gd);
 		
 		//flood a pixel: with Grey
 		floodPixelWithColor(1,1,"Grey",gd);
+		printAllGridLocationsWithColor("Grey", gd);
 
 		
 				
@@ -63,16 +68,40 @@ public class run_test {
 		String oldColor = gd.getLocationColor(x, y);
 		int[] xy = gd.floodPixel(x,y, newColor, oldColor); //(x,y, newColor, oldColor)
 		boolean notEnd = true;
-		while(notEnd){			
-			if(xy!=null)
-				xy = gd.floodPixel(xy[0], xy[1], newColor, oldColor);
-			else
+		ArrayList<Integer> xArray = new ArrayList<Integer>();
+		ArrayList<Integer> yArray = new ArrayList<Integer>();
+		
+		while (notEnd) {
+			if (xy != null) {
+				if (xy.length == 2) {
+					xy = gd.floodPixel(xy[0], xy[1], newColor, oldColor);
+				} else if (xy.length == 4) {
+					xArray.add(xy[2]);
+					yArray.add(xy[3]);
+					xy = gd.floodPixel(xy[0], xy[1], newColor, oldColor);
+					
+				}
+			} else {
 				notEnd = false;
+			}
 		}
+		
+		if(xArray.size()>0) {
+			for(int i=0; i<xArray.size(); i++) {
+				floodPixelWithColor(xArray.get(i),yArray.get(i),newColor,gd);
+				xArray.remove(i);
+				yArray.remove(i);
+			}
+		}
+		
 				
+		
+	}
+	
+	private static void printAllGridLocationsWithColor(String newColor, Grid gd) {
 		//print all grid locations
-		System.out.println("locations flooded: With "+newColor);
-		gd.printAllLocationsWithCertainColor(newColor);
+				System.out.println("locations flooded: With "+newColor);
+				gd.printAllLocationsWithCertainColor(newColor);
 	}
 	
 	
@@ -134,17 +163,16 @@ class Grid{
 	public int[] floodPixel(int x, int y, String newColor, String oldColor) {
 		// paint main pixel:
 		boolean locationAlreadyFilled = false;
-		locationAlreadyFilled = checkIfLocationAlreadyFilled(x,y);
-		
-		if(locationAlreadyFilled){
+		locationAlreadyFilled = checkIfLocationAlreadyFilled(x, y);
+
+		if (locationAlreadyFilled) {
 			fillSingleGridLocation(newColor, x, y);
 		}
-			
-		else{
+
+		else {
 			System.out.println("This location is not filled with any color previously");
 			return null;
 		}
-			
 
 		// check if there is a pixel above or below
 		checkForNorthPixels(oldColor, x, y);
@@ -154,8 +182,7 @@ class Grid{
 		boolean keepChecking = true;
 		int xChecker = x + 1;
 		while (keepChecking) {
-			String filledLocation = filledLocations.get("(" + xChecker + ","
-					+ y + ")");
+			String filledLocation = filledLocations.get("(" + xChecker + "," + y + ")");
 			if (filledLocation != null && !filledLocation.isEmpty()) {
 				if (filledLocation.equals(oldColor)) {
 					fillSingleGridLocation(newColor, xChecker, y);
@@ -177,8 +204,7 @@ class Grid{
 		keepChecking = true;
 		xChecker = x - 1;
 		while (keepChecking) {
-			String filledLocation = filledLocations.get("(" + xChecker + ","
-					+ y + ")");
+			String filledLocation = filledLocations.get("(" + xChecker + "," + y + ")");
 			if (filledLocation != null && !filledLocation.isEmpty()) {
 				if (filledLocation.equals(oldColor)) {
 					fillSingleGridLocation(newColor, xChecker, y);
@@ -196,19 +222,24 @@ class Grid{
 
 		}
 
-		if (northPixelFound) {
+		if (northPixelFound == true && southPixelFound == true) {
+			int[] xy = { northPixelFoundX, northPixelFoundY, southPixelFoundX, southPixelFoundY };
+			northPixelFound = false;
+			southPixelFound = false;
+			return xy;
+		} else if (northPixelFound) {
 			y = northPixelFoundY;
 			x = northPixelFoundX;
 			northPixelFound = false;
-			//floodPixel(x, y, newColor, oldColor);
-			int[] xy = {x, y};
+			// floodPixel(x, y, newColor, oldColor);
+			int[] xy = { x, y };
 			return xy;
 		} else if (southPixelFound) {
 			y = southPixelFoundY;
 			x = southPixelFoundX;
 			southPixelFound = false;
-			//floodPixel(x, y, newColor, oldColor);
-			int[] xy = {x, y};
+			// floodPixel(x, y, newColor, oldColor);
+			int[] xy = { x, y };
 			return xy;
 		}
 		return null;
